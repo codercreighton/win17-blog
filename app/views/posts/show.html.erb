@@ -10,7 +10,7 @@
 
 	<h3>
 	  
-	  <p>Written By: <%= @post.user.username%></p>
+	  <p>Written By: <%=link_to @post.user.username, user_posts_path(name: @post.user.username)%></p>
 	  <% if @post.user.avatar.url != nil %>
 	  	<p><%= image_tag @post.user.avatar.url, class: 'post-pic' %></p>
 	  <% end %>
@@ -20,10 +20,12 @@
 	<div class="panel panel-body" >
 	<p>
 	 
-	  <%= @post.blog_entry %>
+	  <%= @post.blog_entry.html_safe %>
 	</p>
 
-	<p><%= link_to 'Edit', edit_post_path(@post), class: "btn btn-warning" %></p>
+	<% if @post.user_id == current_user.id %>
+		<p><%= link_to 'Edit', edit_post_path(@post), class: "btn btn-warning" %></p>
+	<% end %>
 	</div>
 	<div class="panel panel-footer">
 	<div id="comments">
@@ -36,14 +38,15 @@
 				<% if comment.user.avatar.url != nil %>
 				<%= image_tag comment.user.avatar.url, class: 'comment-pic' %>
 			<% end %>	
-				<%= comment.user.username %> said...</h4>
+				<%= link_to comment.user.username, user_posts_path(name: comment.user.username) %> said...</h4>
 			
-			<p><%= comment.comment_entry %></p>
+			<p><%= comment.comment_entry.html_safe %></p>
 			<h6>Created on <%= comment.created_at.strftime("%B %e, %Y at %l:%M %p") %></h6>
 
-			<p><%= link_to "Edit Comment", edit_comment_path(id: comment.id), class: "btn btn-primary" %> | 
-			<%= link_to 'Destroy', comment, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-danger" %></p>
-			
+			<% if comment.user_id == current_user.id %>
+				<p><%= link_to "Edit Comment", edit_comment_path(id: comment.id), class: "btn btn-primary" %> | 
+				<%= link_to 'Destroy', comment, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-danger" %></p>
+			<% end %>
 		</div>
 		<% end %>	
 
